@@ -11,7 +11,7 @@ red = (213,  50,80)
 green = (0,  255,0)
 blue = (50,  153,213)
 darkgreen= (0,  100,0)
-
+#фон игры
 yraq = pygame.image.load("yraq.jpg")
 
 dis_width = 500
@@ -21,39 +21,40 @@ dis = pygame.display.set_mode((dis_width, dis_height))
 pygame.display.set_caption('Змейка от Рамильки и Андрейки')
 
 clock = pygame.time.Clock()
-
+#размер и скорость передвижения змейки
 snake_block = 10
 snake_speed = 10
 
 font_style = pygame.font.SysFont("timesnewroman", 25)
-score_font = pygame.font.SysFont("timesnewroman", 35)
+score_font = pygame.font.SysFont("timesnewroman", 25)
 
 
 def Score(score):
     value = score_font.render("Счёт: " + str(score), True, yellow)
-    dis.blit(value, [0, 0])
+    dis.blit(value, [dis_width / 2.5 ,0])
 
 
-def our_snake(snake_block, snake_list):
+def snake_body (snake_block, snake_list):
     for x in snake_list:
-        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
+        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block]) #создание самой змейки как прямоугольника с заданным цветом
 
-
-def message(msg, color):
+#текст выводимый на экран после поражения
+def text(msg, color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width / 2.6, dis_height / 3])
 
 
-def message1(msg, color):
+def text2(msg, color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width / 4.5, dis_height / 2.4])
 
 
-def message2(msg, color):
+def text3(msg, color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width / 2.4, dis_height / 2])
+#--------------------------------------------------------------
 
-
+#cоздание функций
 def gameLoop():
     game_over = False
     game_close = False
@@ -67,16 +68,17 @@ def gameLoop():
     snake_List = []
     Length_of_snake = 1
 
-    foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-    foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+    applex = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+    appley = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+
 
     while not game_over:
 
         while game_close == True:
             dis.fill(black)
-            message ("Ты проиграл!", red)
-            message1("Нажмите A, чтобы продолжить", red)
-            message2("Выйти-Q", red)
+            text("Ты проиграл!", red)
+            text2("Нажмите A, чтобы продолжить", red)
+            text3("Выйти-Q", red)
 
             Score(Length_of_snake - 1)
             pygame.display.update()
@@ -88,7 +90,8 @@ def gameLoop():
                         game_close = False
                     if event.key == pygame.K_a:
                         gameLoop()
-
+#передвижение c помощью события KEYDOWN
+#---------------------------------------------------------------
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -105,13 +108,16 @@ def gameLoop():
                 elif event.key == pygame.K_DOWN:
                     y1_change = snake_block
                     x1_change = 0
-
+#заданные границы игрового поля (игровое поле по разрешению экрана)
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             game_close = True
+
         x1 += x1_change
         y1 += y1_change
+#загруженный фон
         dis.blit(yraq,(0, 0))
-        pygame.draw.rect(dis, red, [foodx, foody, snake_block, snake_block])
+        
+        pygame.draw.rect(dis, red, [applex, appley, snake_block, snake_block])
         snake_Head = []
         snake_Head.append(x1)
         snake_Head.append(y1)
@@ -123,14 +129,15 @@ def gameLoop():
             if x == snake_Head:
                 game_close = True
 
-        our_snake(snake_block, snake_List)
+        snake_body(snake_block, snake_List)
         Score(Length_of_snake - 1)
 
         pygame.display.update()
-
-        if x1 == foodx and y1 == foody:
-            foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-            foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+#спавн яблок значение (10) для разрешения экрана 500x500
+        if x1 == applex and y1 == appley:
+            applex = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+            appley = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+#длина змейки при съедании яблока
             Length_of_snake += 1
 
         clock.tick(snake_speed)
